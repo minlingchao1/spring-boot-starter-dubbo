@@ -1,0 +1,80 @@
+group 'com.yunbei.app'
+version '1.3-SNAPSHOT'
+def artifactId = "spring-boot-starter-dubbo"
+
+buildscript {
+	ext {
+		springBootVersion = '1.3.5.RELEASE'
+	}
+	repositories {
+		
+		mavenCentral()
+		maven {
+			   url "http://maven.ciaosir.com/nexus/content/groups/public/"
+	    }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot' 
+apply plugin: 'maven' 
+
+jar {
+	baseName = 'spring-boot-starter-dubbo'
+	version = '1.3-SNAPSHOT'
+}
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+   
+	mavenCentral()
+	 maven {
+		   url "http://maven.ciaosir.com/nexus/content/groups/public/"
+    }
+}
+
+
+//上传到nexus
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://maven.ciaosir.com/nexus/content/repositories/snapshots/") {
+                authentication(userName: "admin", password: "admin123")
+            }
+            pom.version = "$project.version"
+            pom.artifactId = "$artifactId"
+            pom.groupId = "$project.group"
+        }
+    }
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter')
+	testCompile('org.springframework.boot:spring-boot-starter-test') 
+	compile('com.101tec:zkclient:+')
+	compile('com.alibaba:dubbo:2.8.4'){
+	   exclude module:'guava:com.google.guava'
+	   exclude module:'curator-framework:org.apache.curator'
+	   exclude module:'curator-client:org.apache.curator'
+	   exclude module:'aopalliance:aopalliance'
+	   exclude module:'javax.servlet-api:javax.servlet'
+	   exclude module:'httpclient:org.apache.httpcomponents'
+	   exclude module:'commons-pool:commons-pool'
+	   exclude module:'commons-codec:commons-codec'
+	   exclude module:'httpcore:org.apache.httpcomponents'
+	}
+	
+}
+
+
+eclipse {
+	classpath {
+		 containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+		 containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
+	}
+}
